@@ -1,4 +1,4 @@
-# image cipher with hybrid chaotic
+# Cipher image with hybrid chaotic
 ## Encryption
 ```python
 import Encryption
