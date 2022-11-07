@@ -1,6 +1,6 @@
 # image cipher with hybrid chaotic
 ## Encryption
-'''python
+'''
 from Encryption import HybridChaotic
 import numpy as np
 
