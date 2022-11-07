@@ -1,6 +1,6 @@
 # image cipher with hybrid chaotic
 ## Encryption
-'''
+```python
 from Encryption import HybridChaotic
 import numpy as np
 
@@ -11,4 +11,4 @@ img = np.array(img)
 
 cipher = HybridChaotic(2, 3, 3.52, 0.76)
 enc_img = cipher.run(img)
-'''
+```
