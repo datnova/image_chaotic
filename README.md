@@ -1,5 +1,8 @@
 # Cipher image with hybrid chaotic
-## Encryption
+## Install requirments
+$ pip install -r requirements.txt
+
+## Cipher
 ```python
 from HybridChaotic.Cipher import Cipher
 import numpy as np
