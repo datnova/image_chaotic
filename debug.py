@@ -1,11 +1,3 @@
-# Cipher image with hybrid chaotic
-## Install requirments
-```
-$ pip install -r requirements.txt
-```
-
-## Cipher
-```python
 from HybridChaotic.Cipher import Cipher
 import numpy as np
 
@@ -20,4 +12,3 @@ enc_img = c.Encrypt(origin_img)
 dec_img = c.Decrypt(enc_img)
 
 assert np.array_equal(origin_img, dec_img)
-```

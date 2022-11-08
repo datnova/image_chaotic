@@ -1,10 +1,10 @@
-from Decrypt import DecryptImg
-from Encrypt import EncryptImg
+from HybridChaotic.Encrypt import EncryptImg
+from HybridChaotic.Decrypt import DecryptImg
 from Crypto.Util.number import getPrime
 from random import uniform, random
 import numpy as np
 
-class HybridChaotic:
+class Cipher:
 	def __init__(self, p = None, q = None, l = None, x = None, len_mantissa = 3) -> None:
 		self.p = p if p is not None else getPrime(256)
 		self.q = q if q is not None else getPrime(256)
@@ -15,10 +15,10 @@ class HybridChaotic:
 	def get_init_value(self) -> tuple[int, int, int, int]:
 		return p, q, l, x
 
-	def Encrypt(img: np.ndarray) -> np.ndarray:
+	def Encrypt(self, img: np.ndarray) -> np.ndarray:
 		enc = EncryptImg(self.p, self.q, self.l, self.x, self.len_mantissa)
 		return enc.Run(img)
 
-	def Encrypt(img: np.ndarray) -> np.ndarray:
+	def Decrypt(self, img: np.ndarray) -> np.ndarray:
 		dec = DecryptImg(self.p, self.q, self.l, self.x, self.len_mantissa)
 		return dec.Run(img)
