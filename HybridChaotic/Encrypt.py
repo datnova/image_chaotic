@@ -31,19 +31,23 @@ class EncryptImg:
         img[y_2][x_2] = first_pixel
 
     def ACM(self, img: np.ndarray) -> None:
+        # Swap pixel with Arnot cat map
         col, row, _ = img.shape
         for i in range(max(col, row)):
             for j in range(row):
                 for k in range(col):
-                    new_x, new_y = self.Cal_cordinate((k, j), col, row)
-                    self.Swap_pixel(img, (k, j), (new_x, new_y))
+                    # Calculate next coordinate and then swap pixel
+                    new_coor = self.Cal_cordinate((k, j), col, row)
+                    self.Swap_pixel(img, (k, j), new_coor)
     
     def pixel_opposite(self, coor: tuple[int, int], max_x: int, max_y: int) -> tuple[int, int]:
+        # calculate opposite pixel in the square [max_x X max_y] in image
         new_x = max_x - coor[0] - 1
         new_y = max_y - coor[1] - 1
         return new_x, new_y
     
     def Swap_next(self, shape: tuple[int, int], coor: tuple[int, int]) -> None:
+        # calculate next pixel base on shuffle image algorithm to swap
         row, col = shape
         step = int(np.log2(max(row, col)))
         col_barrier = [col // (2 * i) for i in range(1, int(np.log2(col)))][::-1] + [col]
@@ -56,6 +60,7 @@ class EncryptImg:
         return coor
     
     def Shuffle_img(self, img: np.ndarray) -> None:
+        # loop thought top half pixel to swap
         row, col, _ = img.shape
         for i in range((row + 1) // 2):
             for j in range(col):
@@ -63,6 +68,7 @@ class EncryptImg:
                 self.Swap_pixel(img, (x, y), (j, i))
         
     def Logistic_gen(self) -> int:
+        # logistic generator
         while True:
             self.x = int(self.l * self.x * (1 - self.x) * self.mantissa) / self.mantissa
             yield self.x
