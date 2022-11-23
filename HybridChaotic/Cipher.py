@@ -4,16 +4,28 @@ from Crypto.Util.number import getPrime
 from random import uniform, random
 import numpy as np
 
+MIN_LAMBDA = 3.52
+MAX_LAMBDA = 4
+BIT_PRIME = 256
+
+def Generate_key() -> tuple[int, int, float, float]:
+	return tuple([						\
+     	getPrime(BIT_PRIME),			\
+		getPrime(BIT_PRIME),			\
+		uniform(MIN_LAMBDA, MAX_LAMBDA),\
+		random()])
+
 class Cipher:
-	def __init__(self, p = None, q = None, l = None, x = None, len_mantissa = 3) -> None:
-		self.p = p if p is not None else getPrime(256)
-		self.q = q if q is not None else getPrime(256)
-		self.l = l if l is not None else uniform(3.52, 4)
-		self.x = x if x is not None else random()
+	def __init__(self, p = None, q = None, l = None, x = None, len_mantissa = 5) -> None:
+		temp_key = Generate_key()
+		self.p = p if p is not None else temp_key[0]
+		self.q = q if q is not None else temp_key[1]
+		self.l = l if l is not None else temp_key[2]
+		self.x = x if x is not None else temp_key[3]
 		self.len_mantissa = len_mantissa
 
-	def get_init_value(self) -> tuple[int, int, int, int]:
-		return p, q, l, x
+	def Get_init_value(self) -> tuple[int, int, int, int]:
+		return self.p, self.q, self.l, self.x
 
 	def Encrypt(self, img: np.ndarray) -> np.ndarray:
 		enc = EncryptImg(self.p, self.q, self.l, self.x, self.len_mantissa)
