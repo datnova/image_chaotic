@@ -1,4 +1,4 @@
-# Cipher image with hybrid chaotic
+# Cipher image with AES
 
 ## Install requirments
 
