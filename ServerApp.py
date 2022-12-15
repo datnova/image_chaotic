@@ -13,7 +13,7 @@ class ServerApp:
         self.db = DataBase(database_dir)
     
     def Create_user(self, username: str, password: str) -> dict[str, str | bool]:
-        if not (8 <= len(username) <= 24):
+        if not (5 <= len(username) <= 24):
             return {"result": False, "message": "invalid username length"}
         
         if not(8 <= len(password) <= 24):
@@ -86,11 +86,22 @@ class ServerApp:
         info = self.db.Get_user_info(cookie)
         return {"result": True, "user_name": info[0], "money": info[1]}
     
-    def Get_own_img(self, cookie: str, user_name: str) -> dict[str, str | bool]:
+    def Get_own_imgs(self, cookie: str, user_name: str) -> dict[str, str | bool | list[tuple[str, int, str]]]:
         if (res := self.Verify_cookie(cookie))["result"] == False:
             return res
-        
+
         imgs_name = self.db.Get_user_own(user_name)
+        if imgs_name is None:
+            return {"result": False, "message": "username does not exist"}
+        return {"result": True, "imgs_name": imgs_name}
+    
+    def Get_purchase_imgs(self, cookie: str) -> dict[str, str | bool | list[tuple[str, int, str]]]:
+        if (res := self.Verify_cookie(cookie))["result"] == False:
+            return res
+
+        imgs_name = self.db.Get_user_buy(cookie)
+        if imgs_name is None:
+            return {"result": False, "message": "username does not exist"}
         return {"result": True, "imgs_name": imgs_name}
     
     def Upload_img(self, cookie: str, img: bytes, img_name: str, cost: int) -> dict[str, str | bool]:
@@ -144,17 +155,18 @@ class ServerApp:
         return res
             
     def Verify_buy_img(self, cookie: str, owner: str, img_name: str) -> bool:
-        if (img_name, owner) in self.Get_user_buy(cookie):
-            return True
+        for item in self.db.Get_user_buy(cookie):
+            if item[0] == img_name and item[2] == owner:
+                return True
         return False    
         
     def Buy_img(self, cookie: str, owner: str, img_name: str):
         if (res := self.Verify_cookie(cookie))["result"] == False:
             return res 
         
-        if self.db.Buy_img(cookie, owner, img_name):
-            return {"result": True, "message": f"successful in purchase {img_name}"}
-        return {"result": False, "message": "failed to purchase {img_name}"}
+        if (message := self.db.Buy_img(cookie, owner, img_name)):
+            return {"result": False, "message": message}
+        return {"result": True, "message": f"Success in purchase {img_name} owned by {owner}"}
         
     def Verify_cookie(self, cookie: str) -> dict[str, str]:
         exp = self.db.Get_cookie_exp(cookie)

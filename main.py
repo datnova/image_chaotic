@@ -29,8 +29,13 @@ async def user_info(cookie: str = Form()):
     return res
 
 @app.get("/own_imgs/{user_name}")
-async def own_img(user_name: str, cookie: str = Form()):
-    res = server_app.Get_own_img(cookie, user_name)
+async def own_imgs(user_name: str, cookie: str = Form()):
+    res = server_app.Get_own_imgs(cookie, user_name)
+    return res
+
+@app.get("/purchase_imgs")
+async def purchase_imgs(cookie: str = Form()):
+    res = server_app.Get_purchase_imgs(cookie)
     return res
 
 @app.post("/buy_img/{owner}/{img_name}")

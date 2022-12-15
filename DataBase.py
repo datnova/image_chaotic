@@ -21,7 +21,8 @@ class DataBase:
             CREATE TABLE IF NOT EXISTS buy_table(
                 buyer       TEXT,
                 img_name    TEXT,
-                owner       TEXT)
+                owner       TEXT,
+                UNIQUE(buyer, img_name, owner))
             """)
 
         # create img database
@@ -65,11 +66,17 @@ class DataBase:
         res = self.cur.execute("SELECT user_name, money FROM user_table WHERE cookie=?", (cookie, ))
         return res.fetchone()
     
-    def Get_user_own(self, user_name: str) -> list[str]:
+    def Get_user_own(self, user_name: str) -> list[tuple[str, int, str]] | None:
+        # check username existence
+        if self.cur.execute(
+            "SELECT count(1) FROM user_table WHERE user_name=?", 
+            (user_name, )
+        ).fetchone()[0] == 0: return None
+        
         # get all owned img name
         res = self.cur.execute(
             """
-            SELECT img_name 
+            SELECT img_name, cost, owner
               FROM img_table 
              INNER JOIN user_table 
                 ON user_table.user_name = img_table.owner 
@@ -78,14 +85,21 @@ class DataBase:
             (user_name, )).fetchall()
 
         # return list of owned img name 
-        return list(map(lambda x: x[0], res)) if res is not None else list()
+        return res if res is not None else list()
 
-    def Get_user_buy(self, cookie: str) -> list[tuple[str, str]]:
-        buyer = self.Get_user_info(cookie)[9]
+    def Get_user_buy(self, cookie: str) -> list[tuple[str, int, str]]:
+        buyer = self.Get_user_info(cookie)[0]
         
         # get all owned img name
-        res = self.cur.execute( \
-            "SELECT img_name, owner FROM buy_table WHERE buyer=?", 
+        res = self.cur.execute(
+            """
+            SELECT img_table.img_name, cost, img_table.owner
+              FROM buy_table
+             INNER JOIN img_table
+                ON buy_table.img_name = img_table.img_name 
+               AND buy_table.owner = img_table.owner 
+             WHERE buyer=?
+            """, 
             (buyer, )).fetchall()
 
         # return list of owned img name 
@@ -127,30 +141,33 @@ class DataBase:
             "UPDATE img_table SET owner='' WHERE owner=? AND img_name=?", \
             (user_name, img_name))
 
-    def Buy_img(self, cookie: str, owner: str, img_name: str) -> bool:
+    def Buy_img(self, cookie: str, owner: str, img_name: str) -> str:
         # get cost
         cost = self.cur.execute(
             "SELECT cost FROM img_table WHERE owner=? AND img_name=?",
             (owner, img_name)
         ).fetchone()
-        if cost is None: return False
+        if cost is None: return f"image {img_name} owned by {owner} does not exist"
         else: cost = cost[0]
 
         # get buyer from cookie
         buyer = self.Get_user_info(cookie)[0]
 
+        # update buy table
+        try:
+            self.cur.execute("INSERT INTO buy_table VALUES(?, ?, ?)", (buyer, img_name, owner))
+        except sqlite3.IntegrityError:
+            return f"Already purchased {img_name} owned by {owner}"
+
         # minus money from buyer
         if not self.Minus_money(buyer, cost): 
-            return False
+            return f"Dont have enough money to process!"
         
         # add money to owner
         self.Add_money(owner, cost)
-
-        # update buy table
-        self.cur.execute("INSERT INTO buy_table VALUES(?, ?, ?)", (buyer, img_name, owner))
         
         self.database_con.commit()
-        return True 
+        return str() 
 
     def Add_money(self, user_name: str, amount: int) -> None:
         self.cur.execute("UPDATE user_table SET money=money+? WHERE user_name=?", (amount, user_name))

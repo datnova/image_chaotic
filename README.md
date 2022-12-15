@@ -12,3 +12,9 @@ $ pip install -r requirements.txt
 $ python main.py 
 ```
 Access to documents via **localhost:8000/docs**
+
+## Run app in gui
+```
+$ cd ./Gui/
+$ python main.py
+```
