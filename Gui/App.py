@@ -38,9 +38,10 @@ class App:
         data = {"cookie": self.cookie}
         return post(url, data=data, files=img).json()
         
-    def Download_img(self, img_name: str, file_path: str, owner: str = None) -> bool:
+    def Download_img(self, img_name: str, file_path: str, owner: str = None) -> bool | dict[str, bool | str]:
         if not (img_name and owner):
-            return {"result": False, "message": "Please enter image's name and image's owner"}
+            # return {"result": False, "message": "Please enter image's name and image's owner"}
+            return False
         
         owner = self.username if owner is None else owner
         url = DEFAULT_URL_API + f"download/{owner}/{img_name}"

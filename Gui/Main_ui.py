@@ -196,7 +196,7 @@ class MainUI:
         imgs = self.app.Search_owned_imgs(username)["imgs_name"]
         for img in imgs:
             self.search_imgs_textbox.insert(f"0.0", f"{img[0].ljust(60)}| {img[1]}\n")
-        self.search_imgs_textbox.insert(f"0.0", f"{'<img name>'.ljust(60, '_')}| <cost>\n")
+        self.search_imgs_textbox.insert(f"0.0", f"{'<img name>'.ljust(60)}| <cost>\n")
         self.search_imgs_textbox.configure(state="disable")
 
     def Upload_img(self):
@@ -221,6 +221,7 @@ class MainUI:
         elif res["result"] == False:
             messagebox.showerror("Error", res["message"])
         else:
+            self.Reload_owned_imgs()
             messagebox.showinfo("Info", res["message"])
 
     def Download_owned_img(self):
@@ -235,7 +236,7 @@ class MainUI:
             filetypes = (("png files","*.png"),("all files","*.*"))
         )
         
-        if self.app.Download_img(img_name, file_path) == False:
+        if self.app.Download_img(img_name, file_path, self.app.username) == False:
             messagebox.showerror("Error", f"Cant download {img_name} owned by {self.app.username}")
         else:
             messagebox.showinfo("Info", "Download success!")
@@ -256,7 +257,7 @@ class MainUI:
         )
         
         if self.app.Download_img(img_name, file_path, owner) == False:
-            messagebox.showerror("Error", f"Cant download {img_name} owned by {self.app.username}")
+            messagebox.showerror("Error", f"Cant download {img_name} owned by {owner}")
         else:
             messagebox.showinfo("Info", "Download success!")
 
