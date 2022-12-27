@@ -25,7 +25,7 @@ $ Do you want to keep old key config (Y/n):
 
 ✔️ **Choose no**: after choose **no**, you can enter database password.
 
-✔️ **Change database key**: make post request to http://127.0.0.1:8000/change_database_password with payload 
+✔️ **Change database key**: make post request to **localhost:8000/change_database_password** with payload 
 ```json
 {
     "old_password": <old_password>,
